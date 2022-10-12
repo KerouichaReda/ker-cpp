@@ -39,9 +39,20 @@ template <class T, class A = std::allocator<T>> class dynamic_array {
 public:
   dynamic_array();
   ~dynamic_array();
+  void push_back();
+  void pop_back();
+  void size();
+  void empty();
+  void resize()
+
+  ///itrerator
+
+  
+
 
 private:
-  T *storage = nullptr;
+  T *begin_ = nullptr;
+  
 };
 
 } // end ker namespace

@@ -28,21 +28,22 @@
 ///
 
 /// https://medium.com/analytics-vidhya/c-shared-ptr-and-how-to-write-your-own-d0d385c118ad
+/// https://devblogs.microsoft.com/oldnewthing/20220721-00/?p=106879
 #ifndef KER_MEMORY_SHARED_PTR_H
 #define KER_MEMORY_SHARED_PTR_H
 namespace ker {
 template <class T> class shared_ptr {
 public:
-  shared_ptr() : ptr(nullptr), ref_count(new uint32_t(0)){};
-  shared_ptr(T* _ptr) : ptr(_ptr) , ref_count(new uint32_t(1)){};
+  shared_ptr() : ptr_(nullptr), ref_count_(new uint32_t(0)){};
+  shared_ptr(T *_ptr) : ptr_(_ptr), ref_count_(new uint32_t(1)){};
   ///* Copy Semantic
   decrease_reference();
   /// copy constructor
   shared_ptr(const shared_ptr &obj) {
-    this->ptr = obj.ptr;
-    this->ref_count = obj.ref_count;
-    if (obj.ptr != nullptr) {
-      (*this->ref_count)++;
+    this->ptr_ = obj.ptr_;
+    this->ref_count_ = obj.ref_count_;
+    if (obj.ptr_ != nullptr) {
+      (*this->ref_count_)++;
     }
   }
   /// copy assignement
@@ -50,10 +51,10 @@ public:
     /// cleanup any existing date
     decrease_reference();
     // Assign incoming object's date to this object
-    this->ptr = obj.ptr;
-    this->ref_count = obj.ref_count; //
-    if (obj.ptr != nullptr) {
-      (*this->ref_count)++;
+    this->ptr_ = obj.ptr_;
+    this->ref_count_ = obj.ref_count_; //
+    if (obj.ptr_ != nullptr) {
+      (*this->ref_count_)++;
     }
   }
   ///* Move Semantic
@@ -61,27 +62,27 @@ public:
   /// move constructor
   shared_ptr(shared_ptr &&dying_obj) {
     decrease_reference();
-    this->pre = dying_obj.ptr;             // share the underlying pointer
-    this->ref_count = dying_obj.ref_count; //
-    dying_obj.ptr = dying_obj.ref_count = nullptr; // clean up dying_obj
+    this->pre = dying_obj.ptr_;             // share the underlying pointer
+    this->ref_count_ = dying_obj.ref_count_; //
+    dying_obj.ptr_ = dying_obj.ref_count_ = nullptr; // clean up dying_obj
   }
 
   /// move assingnment
   shared_ptr &operator=(shared_ptr &&dying_obj) {
     // decrease reference
     decrease_reference();
-    this->ptr = dying_obj.ptr; //
-    this->ref_count = dying_obj.ref_count;
-    dying_obj.ptr = dying_obj.ref_count = nullptr;
+    this->ptr_ = dying_obj.ptr_; //
+    this->ref_count_ = dying_obj.ref_count_;
+    dying_obj.ptr_ = dying_obj.ref_count_ = nullptr;
   }
 
-  T *operator->() const { return this->ptr; }
-  T &operator*() const { return this->ptr; }
+  T *operator->() const { return this->ptr_; }
+  T &operator*() const { return this->ptr_; }
 
   uint32_t use_count() const {
-    return *ref_count; // *this->ref_count
+    return *ref_count_; // *this->ref_count
   }
-  T *get() const { return this->ptr; }
+  T *get() const { return this->ptr_; }
 
 private:
   void decrease_reference() {
@@ -93,18 +94,11 @@ private:
       delete ref_count;
     }
   }
-  T *ptr{nullptr};
-  uint32_t *ref_count{nullptr};
+  T *ptr_{nullptr};
+  uint32_t *ref_count_{nullptr};
 };
 
-template<class T>
-shared_ptr<T> make_shared(arg...){
-  return shared_ptr(arg);
-}
+template <class T> shared_ptr<T> make_shared(arg...) { return shared_ptr(arg); }
 } // end namespace ker
 
-
-
-
-
-#endif //KER_MEMORY_SHARED_PTR_H
+#endif // KER_MEMORY_SHARED_PTR_H

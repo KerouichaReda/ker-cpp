@@ -26,9 +26,14 @@
 /// THE
 /// SOFTWARE.
 ///
+///https://medium.com/@karankakwani/c-smart-pointers-and-how-to-write-your-own-c0adcbdce04f
 
 
 #ifndef KER_MEMORY_UNIQUE_PTR_H
 #define KER_MEMORY_UNIQUE_PTR_H
+namespace ker {
+
+} ///< end namespace ker
+
 
 #endif //KER_MEMORY_UNIQUE_PTR_H
