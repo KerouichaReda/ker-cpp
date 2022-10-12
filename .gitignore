@@ -1,1 +1,6 @@
 build/
+doc/
+*.exe
+*.ilk
+*.obj
+*.pdb
