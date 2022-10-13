@@ -31,19 +31,47 @@
 #define KER_CONCURRENT_QUEUE_H
 #include <queue>
 #include <mutex>
+#include <condition_variable>
 
 namespace ker {
 template <class Data>
 class concurrent_queue {
-    public:
-    concurrent_queue(){};
-    bool empty() const{
+   public:
+    void push(Data const& _data) {
+        std::unique_lock<std::mutex> lock(mutex_);
+        queue_.push(_data);
+        lock.unlock();
+        condition_variable_.notify_one();
+    }
+    bool empty() const {
         std::lock_guard<std::mutex> lock(mutex_);
         return queue_.empty();
     }
-    private:
+
+    bool try_pop(Data& popped_value) {
+        // replace with optional
+        std::lock_guard<std::mutex> lock(mutex_);
+        if (queue_.empty()) {
+            return false;
+        }
+        popped_value = queue_.front();
+        queue_.pop();
+        return true;
+    }
+
+    void wait_and_pop(Data& popped_value) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        while (queue_.empty()) {
+            condition_variable_.wait(lock);
+        }
+        popped_value = queue_.front();
+        queue_.pop();
+    }
+
+   private:
     std::queue<Data> queue_;
-    mutable std::mutex mutex_
+    mutable std::mutex mutex_;
+    std::condition_variable condition_variable_;
 };
 }
 

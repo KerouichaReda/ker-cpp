@@ -23,3 +23,6 @@ https://github.com/nlohmann/fifo_map
 
 https://source.chromium.org/chromium/chromium/src/+/main:base/containers/linked_list_unittest.cc
 https://www.ida.liu.se/~TDDD38/exercises/Container_Design/
+
+## concurent queue
+https://www.justsoftwaresolutions.co.uk/threading/implementing-a-thread-safe-queue-using-condition-variables.html
