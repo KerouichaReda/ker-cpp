@@ -99,7 +99,7 @@ class shared_ptr {
     uint32_t* ref_count_{nullptr};
 };
 
-template <class T,class ...A>
+template <class T, class... A>
 shared_ptr<T> make_shared(A&&... arg) {
     return shared_ptr<T>(new T(std::forward<A>(arg...));
 }

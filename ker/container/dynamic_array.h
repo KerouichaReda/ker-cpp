@@ -52,6 +52,8 @@ public:
 
 private:
   T *begin_ = nullptr;
+  T *end_ = nullptr;
+  T *limit_ = nullptr;
   
 };
 
