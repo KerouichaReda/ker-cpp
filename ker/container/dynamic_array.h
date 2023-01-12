@@ -34,29 +34,24 @@
 
 namespace ker {
 
-template <class T, class A = std::allocator<T>> class dynamic_array {
+template <class T, class A = std::allocator<T>>
+class dynamic_array {
+   public:
+    dynamic_array();
+    ~dynamic_array();
+    void push_back();
+    void pop_back();
+    void size();
+    void empty();
+    void resize();
 
-public:
-  dynamic_array();
-  ~dynamic_array();
-  void push_back();
-  void pop_back();
-  void size();
-  void empty();
-  void resize()
-
-  ///itrerator
-
-  
-
-
-private:
-  T *begin_ = nullptr;
-  T *end_ = nullptr;
-  T *limit_ = nullptr;
-  
+    /// itrerator
+   private:
+    T* begin_ = nullptr;
+    T* end_ = nullptr; 
+    T* edge_ = nullptr; //end of the allocated storage
 };
 
-} // end ker namespace
+}  // end ker namespace
 
-#endif // KER_CONTAINER_DYNAMIC_ARRAY_H
+#endif  // KER_CONTAINER_DYNAMIC_ARRAY_H
