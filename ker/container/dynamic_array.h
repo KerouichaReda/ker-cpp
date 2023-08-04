@@ -33,23 +33,54 @@
 #include <memory>
 
 namespace ker {
-
+constexpr std::size_t max_size_{0xFFFFFFFFFFFFFFF};
 template <class T, class A = std::allocator<T>>
 class dynamic_array {
    public:
-    dynamic_array();
-    ~dynamic_array();
-    void push_back();
-    void pop_back();
-    void size();
+    dynamic_array() { allocate(); }
+    ~dynamic_array() { delete[] first_; }
+    void push_back(const T& element) {
+        if (last_ == end_) {
+            allocate();
+        }
+        *last_ = element;
+        ++last_;
+    }
+    std::size_t max_size() const { return max_size_; }
+    void push_back(T element) {
+        if (last_ == end_) {
+            allocate();
+        }
+        *last_ = element;
+        ++end;
+    }
+    void pop_back(){
+        if(first_ == last_){
+            //assert
+        }
+        --last_;
+    }
+    std::size_t size() { return last_ - first_; }
     void empty();
     void resize();
 
     /// itrerator
    private:
-    T* begin_ = nullptr;
-    T* end_ = nullptr; 
-    T* edge_ = nullptr; //end of the allocated storage
+    void allocate() {
+        T* temp = first_;
+        std::size_t current_size_ = size();
+        std::size_t new_size_ = current_size_ << 1;
+        first_ = new T[new_size_];
+        last_ = first_ + current_size_;
+        end_ = first_ + new_size_;
+        std::copy(temp, temp + current_size_, first_);
+        delete[] temp;
+    }
+    void deallocate() {}
+    T* first_ = nullptr;
+    T* last_ = nullptr;
+    T* end_ = nullptr;  // end of the allocated storage
+    
 };
 
 }  // end ker namespace
