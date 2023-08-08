@@ -47,13 +47,6 @@ class dynamic_array {
         ++last_;
     }
     std::size_t max_size() const { return max_size_; }
-    void push_back(T element) {
-        if (last_ == end_) {
-            allocate();
-        }
-        *last_ = element;
-        ++end;
-    }
     void pop_back(){
         if(first_ == last_){
             //assert
@@ -69,7 +62,7 @@ class dynamic_array {
     void allocate() {
         T* temp = first_;
         std::size_t current_size_ = size();
-        std::size_t new_size_ = current_size_ << 1;
+        std::size_t new_size_ = current_size_ << 1 ;
         first_ = new T[new_size_];
         last_ = first_ + current_size_;
         end_ = first_ + new_size_;

@@ -71,7 +71,7 @@ public:
 
   void insert(T _element) {
     auto itr = std::find(linear_set_.begin(), linear_set_.end(), [&](T e){return e == _element;});
-    if (itr == linear_set_.end()) {
+    if (itr != linear_set_.end()) {
       return;
     }
     linear_set_.push_back(_element);
