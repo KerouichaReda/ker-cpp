@@ -26,14 +26,23 @@
 /// THE
 /// SOFTWARE.
 ///
-///https://medium.com/@karankakwani/c-smart-pointers-and-how-to-write-your-own-c0adcbdce04f
-
+/// https://medium.com/@karankakwani/c-smart-pointers-and-how-to-write-your-own-c0adcbdce04f
 
 #ifndef KER_MEMORY_UNIQUE_PTR_H
 #define KER_MEMORY_UNIQUE_PTR_H
 namespace ker {
+class unique_ptr {
+   private:
+    /* data */
+   public:
+    unique_ptr(/* args */);
+    ~unique_ptr();
+};
 
-} ///< end namespace ker
+unique_ptr::unique_ptr(/* args */) {}
 
+unique_ptr::~unique_ptr() {}
 
-#endif //KER_MEMORY_UNIQUE_PTR_H
+}  ///< end namespace ker
+
+#endif  // KER_MEMORY_UNIQUE_PTR_H
