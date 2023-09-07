@@ -38,7 +38,7 @@ class shared_ptr {
     shared_ptr() : ptr_(nullptr), ref_count_(new uint32_t(0)){};
     shared_ptr(T* _ptr) : ptr_(_ptr), ref_count_(new uint32_t(1)){};
     ///* Copy Semantic
-    decrease_reference();
+    
     /// copy constructor
     shared_ptr(const shared_ptr& obj) {
         this->ptr_ = obj.ptr_;
