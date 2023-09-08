@@ -51,13 +51,16 @@ class dynamic_array {
     typedef std::ptrdiff_t difference_type;
 
     dynamic_array();
-    dynamic_array(std::size_t n);
-    dynamic_array(std::size_t n, const T element);
-    dynamic_array(const dynamic_array<T>& your_dynamic_array);
-    dynamic_array(dynamic_array<T>&& your_dynamic_array);
-    dynamic_array(iterator your_begin, iterator your_end);
+    dynamic_array(std::size_t);
+    dynamic_array(std::size_t, const T);
+    dynamic_array(const dynamic_array<T>&);
+    dynamic_array(dynamic_array<T>&&);
+    dynamic_array(iterator, iterator);
     dynamic_array(std::initializer_list<T>);
     ~dynamic_array();
+    dynamic_array<T>& operator=(const dynamic_array<T>&);
+    dynamic_array<T>& operator=(dynamic_array<T>&&);
+    dynamic_array<T>& operator=(std::initializer_list<T>);
     void push_back(const T& element);
     std::size_t max_size() const;
     void pop_back();
@@ -187,6 +190,42 @@ dynamic_array<T>::dynamic_array(std::initializer_list<T> init_list) {
     last_ = first_ + size;
     end_ = last_;
     std::copy(init_list.begin(), init_list.end(), first_);
+}
+
+template <class T>
+dynamic_array<T>& dynamic_array<T>::operator=(const dynamic_array<T>& your_dynamic_array) {
+    if (this == &your_dynamic_array) return your_dynamic_array;
+    std::size_t size = your_dynamic_array.size();
+    if (size > this->size()) {
+        deallocate(first_);
+        first_ = allocate(size);
+        end_ = last_ + size;
+    }
+    last_ = first_ + size;
+    std::copy(your_dynamic_array.first_, your_dynamic_array.end_, first_);
+}
+template <class T>
+dynamic_array<T>& dynamic_array<T>::operator=(dynamic_array<T>&& your_dynamic_array) {
+    std::size_t size = your_dynamic_array.size();
+    if (size > this->size()) {
+        deallocate(first_);
+        first_ = allocate(size);
+        end_ = last_ + size;
+    }
+    last_ = first_ + size;
+    std::copy(std::make_move_iterator(your_dynamic_array.first_), std::make_move_iterator(your_dynamic_array.end_),
+              first_);
+}
+template <class T>
+dynamic_array<T>& dynamic_array<T>::operator=(std::initializer_list<T> your_list) {
+    std::size_t size = your_list.size();
+    if (size > this->size()) {
+        deallocate(first_);
+        first_ = allocate(size);
+        end_ = last_ + size;
+    }
+    last_ = first_ + size;
+    std::copy(your_list.first_, your_list.end_, first_);
 }
 template <class T>
 void dynamic_array<T>::deallocate(T* pointer) {
