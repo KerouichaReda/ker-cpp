@@ -42,12 +42,12 @@ class dynamic_array {
     typedef T value_type;
     typedef std::size_t size_type;
     typedef std::ptrdiff_t difference_type;
-    typedef T& reference;
-    typedef const T& const_reference;
-    typedef T* pointer;
-    typedef const T* const_pointer;
-    typedef T* iterator;
-    typedef const T* const_iterator;
+    typedef value_type& reference;
+    typedef const value_type& const_reference;
+    typedef value_type* pointer;
+    typedef const value_type* const_pointer;
+    typedef pointer iterator;
+    typedef const pointer const_iterator;
     typedef std::reverse_iterator<iterator> reverse_iterator;
     typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
@@ -57,7 +57,8 @@ class dynamic_array {
     dynamic_array(std::size_t, const T);
     dynamic_array(const dynamic_array<T>&);
     dynamic_array(dynamic_array<T>&&);
-    dynamic_array(iterator, iterator);
+    template <class InputIt>
+    dynamic_array(InputIt, InputIt);
     dynamic_array(std::initializer_list<T>);
     ~dynamic_array();
     dynamic_array<T>& operator=(const dynamic_array<T>&);
@@ -86,17 +87,19 @@ class dynamic_array {
     void reserve(std::size_t);
     std::size_t capacity();
     void shrink_to_fit();
-    // Modifiers
 
+    // Modifiers
     void clear();
     iterator insert(const_iterator, const T&);
     iterator insert(const_iterator, T&&);
+    iterator insert(const_iterator, size_type, const T&);
+    template <class InputIt>
+    iterator insert(const_iterator, InputIt, InputIt);
+    iterator insert(const_iterator, std::initializer_list<T>);
     template <class... Args>
-    iterator emplace(const_iterator, Args&&...);
-    iterator erase(iterator);
-    iterator erase(const_iterator);
-    iterator erase(iterator, iterator);
-    iterator erase(const_iterator, const_iterator);
+    reference emplace(const_iterator, Args&&...);
+    iterator erase(iterator);    
+    iterator erase(iterator, iterator);  
     void push_back(const T&);
     void push_back(T&&);
     void pop_back();
@@ -144,7 +147,7 @@ void dynamic_array<T>::push_back(T&& element) {
     ++last_;
 }
 template <class T>
-dynamic_array<T>::reference dynamic_array<T>::back() {
+typename dynamic_array<T>::reference dynamic_array<T>::back() {
     return *(last - 1);
 }
 
@@ -201,29 +204,29 @@ dynamic_array<T>::dynamic_array(std::size_t n, const T element) {
     std::fill(first_, last_ + 1, element);
 }
 template <class T>
-dynamic_array<T>::dynamic_array(const dynamic_array<T>& your_dynamic_array) {
-    std::size_t size = your_dynamic_array.size();
+dynamic_array<T>::dynamic_array(const dynamic_array<T>& other) {
+    std::size_t size = other.size();
     first_ = allocate(size);
     last_ = first_ + size;
     end_ = last_;
-    std::copy(your_dynamic_array.first_, your_dynamic_array.end_, first_);
+    std::copy(other.first_, other.end_, first_);
 }
 template <class T>
-dynamic_array<T>::dynamic_array(dynamic_array<T>&& your_dynamic_array) {
-    std::size_t size = your_dynamic_array.size();
+dynamic_array<T>::dynamic_array(dynamic_array<T>&& other) {
+    std::size_t size = other.size();
     first_ = allocate(size);
     last_ = first_ + size;
     end_ = last_;
-    std::copy(std::make_move_iterator(your_dynamic_array.first_), std::make_move_iterator(your_dynamic_array.end_),
-              first_);
+    std::copy(std::make_move_iterator(other.first_), std::make_move_iterator(other.end_), first_);
 }
 template <class T>
-dynamic_array<T>::dynamic_array(dynamic_array<T>::iterator your_begin_itr, dynamic_array<T>::iterator your_end_itr) {
-    std::size_t size = your_end_itr - your_begin_itr;
+template <class InputIt>
+dynamic_array<T>::dynamic_array(InputIt first, InputIt last) {
+    std::size_t size = first - last;
     first_ = allocate(size);
     last_ = first_ + size;
     end_ = last_;
-    std::copy(your_begin_itr, your_end_itr, first_);
+    std::copy(first, last, first_);
 }
 template <class T>
 dynamic_array<T>::dynamic_array(std::initializer_list<T> init_list) {
@@ -304,42 +307,42 @@ bool dynamic_array<T>::empty() {
     return first_ == last_;
 }
 template <class T>
-dynamic_array<T>::reference dynamic_array<T>::at(std::size_t pos) {
+typename dynamic_array<T>::reference dynamic_array<T>::at(std::size_t pos) {
     return *(first_ + pos);
 }
 template <class T>
-dynamic_array<T>::reference dynamic_array<T>::operator[](std::size_t) {
+typename dynamic_array<T>::reference dynamic_array<T>::operator[](std::size_t) {
     return *(first_ + pos);
 }
 template <class T>
-dynamic_array<T>::reference dynamic_array<T>::front() {
+typename dynamic_array<T>::reference dynamic_array<T>::front() {
     return *first_;
 }
 template <class T>
-dynamic_array<T>::const_iterator dynamic_array<T>::cbegin() {
+typename dynamic_array<T>::const_iterator dynamic_array<T>::cbegin() {
     return first_;
 }
 template <class T>
 void dynamic_array<T>::resize(dynamic_array<T>::size_type) {}
 
 template <class T>
-dynamic_array<T>::const_iterator dynamic_array<T>::cend() const {
+typename dynamic_array<T>::const_iterator dynamic_array<T>::cend() const {
     return last_;
 }
 template <class T>
-dynamic_array<T>::reverse_iterator dynamic_array<T>::rbegin() {
+typename dynamic_array<T>::reverse_iterator dynamic_array<T>::rbegin() {
     return std::reverse_iterator(last_);
 }
 template <class T>
-dynamic_array<T>::const_reverse_iterator dynamic_array<T>::crbegin() const {
+typename dynamic_array<T>::const_reverse_iterator dynamic_array<T>::crbegin() const {
     return std::reverse_iterator(last_);
 }
 template <class T>
-dynamic_array<T>::reverse_iterator dynamic_array<T>::rend() {
+typename dynamic_array<T>::reverse_iterator dynamic_array<T>::rend() {
     return std::reverse_iterator(first_);
 }
 template <class T>
-dynamic_array<T>::reverse_iterator dynamic_array<T>::crend() const {
+typename dynamic_array<T>::reverse_iterator dynamic_array<T>::crend() const {
     return std::reverse_iterator(first_);
 }
 template <class T>
@@ -365,6 +368,127 @@ void dynamic_array<T>::shrink_to_fit() {
     std::copy(temp, temp + current_size, first_);
     deallocate(temp);
 }
+template <class T>
+typename dynamic_array<T>::iterator dynamic_array<T>::insert(dynamic_array<T>::const_iterator pos, const T& element) {
+    std::size_t pos_index = std::distance(first_, pos);
+    std::size_t size = this->size();
+    if (pos_index > size) {
+        // assert
+    }
+    if (last_ == end_) {
+        reallocate();
+    }
+    for (iterator itr = end_, stop = first_ + pos_index; itr != stop; --itr) {
+        std::swap(*itr, *(itr - 1));
+    }
+    *(first_ + pos_index) = value;
+    return first_ + pos_index;
+}
+template <class T>
+typename dynamic_array<T>::iterator dynamic_array<T>::insert(const_iterator pos, T&& value) {
+    std::size_t pos_index = std::distance(first_, pos);
+    std::size_t size = this->size();
+    if (pos_index > size) {
+        // assert
+    }
+    if (last_ == end_) {
+        reallocate();
+    }
+    for (iterator itr = end_, stop = first_ + pos_index; itr != stop; --itr) {
+        std::swap(*itr, *(itr - 1));
+    }
+    *(first_ + pos_index) = std::move(value);
+    return first_ + pos_index;
+}
+template <class T>
+typename dynamic_array<T>::iterator dynamic_array<T>::insert(dynamic_array<T>::const_iterator pos, size_type count,
+                                                             const T& value) {
+    std::size_t pos_index = std::distance(first_, pos);
+    std::size_t size = this->size();
+    std::size_t capacity = this->capacity();
+    if (pos_index > size) {
+        // assert
+    }
+    if ((last_ + count) >= end_) {
+        this->resize(capacity + count);
+    }
+    for (iterator itr = end_, stop = first_ + pos_index + count, itr != pos; --itr) {
+        std::swap(*itr, *(itr - 1));
+    }
+    std::fill(first_ + pos_index, first_ + pos_index + count, value);
+    return first_ + pos_index;
+}
+template <class T>
+template <class InputIt>
+typename dynamic_array<T>::iterator dynamic_array<T>::insert(dynamic_array<T>::const_iterator pos, InputIt first,
+                                                             InputIt last) {
+    std::size_t pos_index = std::distance(first_, pos);
+    std::size_t count = std::distance(first, last);
+    std::size_t size = this->size();
+    std::size_t capacity = this->capacity();
+    if (pos_index > size) {
+        // assert
+    }
+    if ((last_ + count) >= end_) {
+        this->resize(capacity + count);
+    }
+    for (iterator itr = end_, stop = first_ + pos_index + count, itr != pos; --itr) {
+        std::swap(*itr, *(itr - 1));
+    }
+    std::copy(first, last, first_ + pos_index);
+    return first_ + pos_index;
+}
+template <class T>
+typename dynamic_array<T>::iterator dynamic_array<T>::insert(dynamic_array<T>::const_iterator pos,
+                                                             std::initializer_list<T> init) {
+    std::size_t pos_index = std::distance(first_, pos);
+    std::size_t count = init.size();
+    std::size_t size = this->size();
+    std::size_t capacity = this->capacity();
+    if (pos_index > size) {
+        // assert
+    }
+    if ((last_ + count) >= end_) {
+        this->resize(capacity + count);
+    }
+    for (iterator itr = end_, stop = first_ + pos_index + count, itr != pos; --itr) {
+        std::swap(*itr, *(itr - 1));
+    }
+    std::copy(init.begin(), init.end(), first_ + pos_index);
+    return first_ + pos_index;
+}
+
+template <class T>
+template <class... Args>
+typename dynamic_array<T>::reference dynamic_array<T>::emplace(dynamic_array<T>::const_iterator, Args&&...) {
+    if (last_ == end_) {
+        reallocate();
+    }
+    *last_ = std::move(T(std::forward<Args>(args)...));
+    return *last_;
+}
+template <class T>
+typename dynamic_array<T>::iterator dynamic_array<T>::erase(dynamic_array<T>::iterator pos) {
+    for (iterator itr = pos, end = last_ - 1; itr != end; ++itr) {
+        std::swap(*itr, *(itr + 1));
+    }
+    last_->~T();
+    last_--;
+    return pos;
+}
+
+template <class T>
+typename dynamic_array<T>::iterator dynamic_array<T>::erase(dynamic_array<T>::iterator first,
+                                                            dynamic_array<T>::iterator last) {
+    std::size_t count = std::distance(first, last);
+    std::size_t pos for (iterator itr = last, end = last_; itr != end; ++itr, ++first) { std::swap(*itr, *(first)); }
+    for (iterator itr = last_ - count; itr != last_; ++itr) {
+        itr->~T();
+    }
+    last_ = last_ - count;
+    return last_;
+}
+
 
 }  // end ker namespace
 
