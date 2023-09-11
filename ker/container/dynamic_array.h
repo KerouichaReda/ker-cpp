@@ -335,12 +335,35 @@ dynamic_array<T>::const_reverse_iterator dynamic_array<T>::crbegin() const {
     return std::reverse_iterator(last_);
 }
 template <class T>
-dynamic_array<T>::reverse_iterator dynamic_array<T>::rend(){
+dynamic_array<T>::reverse_iterator dynamic_array<T>::rend() {
     return std::reverse_iterator(first_);
 }
 template <class T>
-dynamic_array<T>::reverse_iterator dynamic_array<T>::crend() const{
+dynamic_array<T>::reverse_iterator dynamic_array<T>::crend() const {
     return std::reverse_iterator(first_);
+}
+template <class T>
+void dynamic_array<T>::reserve(std::size_t new_size) {
+    std::size_t current_size = size();
+    if (new_size < current_size) {
+        // assert
+    }
+    pointer temp = first_;
+    first_ = allocate(new_size);
+    end_ = first_ + new_size;
+    last_ = first_ + current_size;
+    std::copy(temp, temp + current_size, first_);
+    deallocate(temp);
+}
+template <class T>
+void dynamic_array<T>::shrink_to_fit() {
+    std::size_t current_size = size();
+    pointer temp = first_;
+    first_ = allocate(current_size);
+    end_ = first_ + current_size;
+    last_ = first_ + current_size;
+    std::copy(temp, temp + current_size, first_);
+    deallocate(temp);
 }
 
 }  // end ker namespace
