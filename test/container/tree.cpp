@@ -4,7 +4,9 @@
 int main(int argc, char const *argv[])
 {
 
-    node.data_ = 3;
+    ker::tree<int> tree_;
+    tree_.insert(1);
     std::cout << "Hello tree" << std::endl;
     return 0;
 }
+

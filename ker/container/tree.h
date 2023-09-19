@@ -25,62 +25,76 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE
 /// SOFTWARE.
-/// Link:
-/// https://en.wikipedia.org/wiki/Red%E2%80%93black_tree
-/// https://devblogs.microsoft.com/oldnewthing/20230807-00/?p=108562
+///
+
 #include <memory>
 #include <iterator>
+
+#ifndef KER_CONTAINER_TREE_H
+#define KER_CONTAINER_TREE_H
 namespace ker {
-enum class rb_tree_color : bool { black = true, red = false };
-struct rb_tree_node_base {
-    // typedef
-    typedef rb_tree_node_base* base_ptr;
-    typedef const rb_tree_node_base* const_base_ptr;
+enum class rb_color : bool { red = false, black = true };
 
-    base_ptr s_minimum(base_ptr node);
-    const_base_ptr s_minimum(const_base_ptr node);
-    rb_tree_color color_;
-    rb_tree_node_base* parent_;
-    rb_tree_node_base* left_;
-    rb_tree_node_base* right_;
+template <class payload>
+struct tree_node {
+    tree_node* parent_ = nullptr;
+    tree_node* left_ = nullptr;
+    tree_node* right_ = nullptr;
+    rb_color color_ = rb_color::red;
+    payload data_{};
+    tree_node() {}
+    tree_node(const payload& val, tree_node* parent) : parent_(parent), data_(val) {}
+    tree_node(const payload& val, tree_node* parent, tree_node* left, tree_node* right)
+        : data_(val), parent_(parent), left_(left), right_(right) {}
+    tree_node(tree_node* parent, tree_node* left, tree_node* right) : parent_(parent), left_(left), right_(right) {}
 };
 
-template <class key_compare>
-struct rb_tree_key_compare {
-    key_compare key_compare_;
-    rb_tree_key_compare() : key_compare_() {}
-    rb_tree_key_compare(const key_compare& other_key_compare) : key_compare_(other_key_compare) {}
-};
+template <class payload, class compare = std::less<payload>>
+class tree {
+   public:
+    typedef tree_node<payload> node;
+    tree();
+    void insert(const payload& val);
 
-struct rb_tree_header {
-    rb_tree_node_base header_;
-    std::size_t node_count_;
-    rb_tree_header() {
-        header_.color_ = rb_tree_color::red;
-        reset();
-    }
-    void reset() {
-        header_.parent_ = nullptr;
-        header_.left_ = &header_;
-        header_.right_ = &header_;
-    }
-};
-
-template <class val>
-struct rb_tree_node : rb_tree_node_base {
-    val value_;
-    val* valptr() { return &value; }
-};
-
-class rb_tree {
    private:
-    rb_tree_node_base header_;
-    std::size_t size_;
+    node* allocate(const payload&);
+    void deallocate(node*);
+    node* insert_impl(node*, const payload&);
+
+   private:
+    tree_node<payload> header_;
+    std::size_t size_{0};
+    compare compare_;
+};
+template <class payload, class compare>
+tree<payload, compare>::tree() {
+    header_.left_ = &header_;
+    header_.right_ = &header_;
 };
 
-//---------------------------------DECLARATION-----------------------------------------
-typename rb_tree_node_base::base_ptr rb_tree_node_base::s_minimum(rb_tree_node_base::base_ptr node) { return node; }
-typename rb_tree_node_base::const_base_ptr rb_tree_node_base::s_minimum(rb_tree_node_base::const_base_ptr node) {
-    return node;
+template <class payload, class compare>
+typename tree<payload, compare>::node* tree<payload, compare>::insert_impl(tree<payload, compare>::node* root,
+                                                                           const payload& val) {
+    if (root == nullptr) return update_header(new tree_node<payload>(val, root));
+    if (compare_(val, root->data_)) {
+        root->left_ = insert_impl(root->left_, val);
+    } else if (compare_(root->data_, val)) {
+        root->right_ = insert_impl(root->right_, val);
+    }
+    return root;
+}
+template <class payload, class compare>
+void tree<payload, compare>::insert(const payload& val) {
+    header_.parent_ = insert_impl(header_.parent_, val);
+}
+template <class payload, class compare>
+typename tree<payload, compare>::node* tree<payload, compare>::allocate(const payload& data) {
+    return new tree_node(data);
+}
+template <class payload, class compare>
+void tree<payload, compare>::deallocate(tree<payload, compare>::node* root) {
+    root->data_.~payload();
+    delete root;
 }
 }
+#endif  // KER_CONTAINER_DYNAMIC_ARRAY_H
