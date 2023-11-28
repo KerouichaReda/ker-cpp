@@ -2,10 +2,10 @@
 this project is to achieve high performance code, and extend my expertise in c++
 
 ### interval class , and intervall container
-https://en.wikipedia.org/wiki/Interval_arithmetic
-https://www.boost.org/doc/libs/1_66_0/libs/numeric/interval/doc/interval.htm
-https://www.boost.org/doc/libs/1_46_1/libs/icl/doc/html/index.html#boost_icl.introduction
-https://gcc.gnu.org/onlinedocs/libstdc++/ext/pb_ds/tree_based_containers.html
+* https://en.wikipedia.org/wiki/Interval_arithmetic
+* https://www.boost.org/doc/libs/1_66_0/libs/numeric/interval/doc/interval.htm
+* https://www.boost.org/doc/libs/1_46_1/libs/icl/doc/html/index.html#boost_icl.introduction
+* https://gcc.gnu.org/onlinedocs/libstdc++/ext/pb_ds/tree_based_containers.html
 
 ### segment tree
 https://en.wikipedia.org/wiki/Segment_tree

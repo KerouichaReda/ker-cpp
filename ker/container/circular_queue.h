@@ -37,7 +37,7 @@ template <class T, class A = std::allocator<T>>
 class circular_queue {
    public:
     circular_queue(const size_t _buffer_size) : buffer_size_(_buffer_size) { buffer_ = new T[buffer_size_]; }
-    ~circular_queue();
+    ~circular_queue() {}
     void push(T _item) {
         size_ = std::max(++size_, buffer_size_);
         buffer_[end_index++] = _item;

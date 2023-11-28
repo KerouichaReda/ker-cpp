@@ -27,21 +27,72 @@
 /// SOFTWARE.
 ///
 /// https://medium.com/@karankakwani/c-smart-pointers-and-how-to-write-your-own-c0adcbdce04f
+// https://archive.is/20211025041014/https://medium.com/swlh/c-smart-pointers-and-how-to-write-your-own-c0adcbdce04f
 
 #ifndef KER_MEMORY_UNIQUE_PTR_H
 #define KER_MEMORY_UNIQUE_PTR_H
 namespace ker {
+template <class T>
 class unique_ptr {
-   private:
-    /* data */
    public:
-    unique_ptr(/* args */);
-    ~unique_ptr();
+    unique_ptr() : ptr_(nullptr) {}
+    unique_ptr(T* ptr) : ptr_(ptr) {}
+    unique_ptr(const unique_ptr&) = delete;
+    unique_ptr& operator=(const unique_ptr&) = delete;
+    unique_ptr(unique_ptr&& dyingObj) {
+        this->ptr_ = dyingObj.ptr_;
+        dyingObj.ptr_ = nullptr;
+    }
+
+    unique_ptr& operator=(unique_ptr&& dyingObj) {
+        clear();
+        this->ptr_ = dyingObj.ptr_;
+        dyingObj.ptr_ = nullptr;
+    }
+
+    T* operator->() { return this->ptr_; }
+    T& operator*() { return *(this->ptr_); }
+    ~unique_ptr() { clear(); }
+
+   private:
+    void clear() {
+        if (ptr_ != nullptr) {
+            delete ptr_;
+        }
+    }
+    T* ptr_ = nullptr;
 };
+template <class T>
+class unique_ptr<T[]> {
+   public:
+    unique_ptr() : ptr_(nullptr) {}
+    unique_ptr(T* ptr) : ptr_(ptr) {}
+    unique_ptr(const unique_ptr&) = delete;
+    unique_ptr& operator=(const unique_ptr&) = delete;
+    unique_ptr(unique_ptr&& dyingObj) {
+        this->ptr_ = dyingObj.ptr_;
+        dyingObj.ptr_ = nullptr;
+    }
 
-unique_ptr::unique_ptr(/* args */) {}
+    unique_ptr& operator=(unique_ptr&& dyingObj) {
+        clear();
+        this->ptr_ = dyingObj.ptr_;
+        dyingObj.ptr_ = nullptr;
+    }
 
-unique_ptr::~unique_ptr() {}
+    T* operator->() { return this->ptr_; }
+    T& operator*() { return *(this->ptr_); }
+    T& operator[](std::size_t index) { return this->ptr_[index]; }
+    ~unique_ptr() { clear(); }
+
+   private:
+    void clear() {
+        if (ptr_ != nullptr) {
+            delete ptr_[];
+        }
+    }
+    T* ptr_ = nullptr;
+};
 
 }  ///< end namespace ker
 
