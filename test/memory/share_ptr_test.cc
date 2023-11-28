@@ -1,5 +1,5 @@
 #include <iostream>
-#include "shared_ptr.h"
+#include "../../ker/memory/shared_ptr.h"
 class share_ptr_test {
    private:
     /* data */
