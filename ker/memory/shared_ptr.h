@@ -38,7 +38,7 @@ class shared_ptr {
     shared_ptr() : ptr_(nullptr), ref_count_(new uint32_t(0)){};
     shared_ptr(T* _ptr) : ptr_(_ptr), ref_count_(new uint32_t(1)){};
     ///* Copy Semantic
-    
+
     /// copy constructor
     shared_ptr(const shared_ptr& obj) {
         this->ptr_ = obj.ptr_;
@@ -101,7 +101,7 @@ class shared_ptr {
 
 template <class T, class... A>
 shared_ptr<T> make_shared(A&&... arg) {
-    return shared_ptr<T>(new T(std::forward<A>(arg...));
+    return shared_ptr<T>(new T(std::forward<A>(arg...)); // this defintion is not the correct one and need to be improved
 }
 }  // end namespace ker
 

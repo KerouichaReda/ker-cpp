@@ -8,7 +8,7 @@ class share_ptr_test {
     int data_2;
     int data_3;
     share_ptr_test() : data_1(0), data_2(1), data_3(2) {}
-    ~share_ptr_test();
+    ~share_ptr_test() = default;
 };
 
 int main(int argc, char const* argv[]) {
