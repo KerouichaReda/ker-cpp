@@ -22,6 +22,6 @@ class list {
 template <class T>
 list<T>::list(/* args */) {}
 template <class T>
-list<>::~list() {}
+list<T>::~list() {}
 
 }  // namespace ker

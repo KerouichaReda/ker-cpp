@@ -3,7 +3,7 @@
 /// @section LICENSE
 /// MIT License
 ///
-/// Copyright (c) 2022 Reda Kerouicha <kerouicha_reda@outlook.com>
+/// Copyright (c) 2024 Reda Kerouicha <kerouicha_reda@outlook.com>
 ///
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to
@@ -31,48 +31,48 @@
 #define KER_CONCURRENT_QUEUE_H
 #include <queue>
 #include <mutex>
-#include <condition_variable>
 
 namespace ker {
-template <class Data>
+template <class T>
 class concurrent_queue {
    public:
-    void push(Data const& _data) {
-        std::unique_lock<std::mutex> lock(mutex_);
-        queue_.push(_data);
-        lock.unlock();
-        condition_variable_.notify_one();
-    }
-    bool empty() const {
-        std::lock_guard<std::mutex> lock(mutex_);
-        return queue_.empty();
-    }
-
-    bool try_pop(Data& popped_value) {
-        // replace with optional
-        std::lock_guard<std::mutex> lock(mutex_);
-        if (queue_.empty()) {
-            return false;
-        }
-        popped_value = queue_.front();
-        queue_.pop();
-        return true;
-    }
-
-    void wait_and_pop(Data& popped_value) {
-        std::lock_guard<std::mutex> lock(mutex_);
-        while (queue_.empty()) {
-            condition_variable_.wait(lock);
-        }
-        popped_value = queue_.front();
-        queue_.pop();
-    }
+    void push(const T&);
+    T& front();
+    void pop();
+    std::size_t size();
+    bool empty();
 
    private:
-    std::queue<Data> queue_;
-    mutable std::mutex mutex_;
-    std::condition_variable condition_variable_;
+    std::queue<T> queue_;
+    std::mutex mutex_;
 };
+
+template <class T>
+void concurrent_queue<T>::push(const T& value) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    queue_.push(value);
+}
+template <class T>
+T& concurrent_queue<T>::front() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    return queue_.front();
+}
+
+template <class T>
+void concurrent_queue<T>::pop() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (queue_.empty()) return;
+    queue_.pop();
+}
+std::size_t concurrent_queue<T>::size() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    return queue_.size();
+}
+template <class T>
+bool concurrent_queue<T>::empty() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    return queue_.empty();
+}
 }
 
 #endif

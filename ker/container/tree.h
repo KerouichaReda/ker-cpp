@@ -3,7 +3,7 @@
 /// @section LICENSE
 /// MIT License
 ///
-/// Copyright (c) 2023 Reda Kerouicha <kerouicha_reda@outlook.com>
+/// Copyright (c) 2024 Reda Kerouicha <kerouicha_reda@outlook.com>
 ///
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to
@@ -33,14 +33,14 @@
 #ifndef KER_CONTAINER_TREE_H
 #define KER_CONTAINER_TREE_H
 namespace ker {
-enum class rb_color : bool { red = false, black = true };
+enum class color : bool { red = false, black = true };
 
 template <class payload>
 struct tree_node {
     tree_node* parent_ = nullptr;
     tree_node* left_ = nullptr;
     tree_node* right_ = nullptr;
-    rb_color color_ = rb_color::red;
+    color color_ = color::red;
     payload data_{};
     tree_node() {}
     tree_node(const payload& val, tree_node* parent) : parent_(parent), data_(val) {}
@@ -59,6 +59,7 @@ class tree {
    private:
     node* allocate(const payload&);
     void deallocate(node*);
+    node* update_header(node* root);
     node* insert_impl(node*, const payload&);
 
    private:
@@ -71,6 +72,10 @@ tree<payload, compare>::tree() {
     header_.left_ = &header_;
     header_.right_ = &header_;
 };
+template <class payload, class compare>
+typename tree<payload, compare>::node* tree<payload, compare>::update_header(tree<payload, compare>::node* root) {
+    return root;
+}
 
 template <class payload, class compare>
 typename tree<payload, compare>::node* tree<payload, compare>::insert_impl(tree<payload, compare>::node* root,
