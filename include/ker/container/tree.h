@@ -27,12 +27,13 @@
 /// SOFTWARE.
 ///
 
-#include <memory>
 #include <iterator>
+#include <memory>
 
 #ifndef KER_CONTAINER_TREE_H
 #define KER_CONTAINER_TREE_H
 namespace ker {
+namespace container {
 enum class color : bool { red = false, black = true };
 
 template <class payload>
@@ -101,5 +102,6 @@ void tree<payload, compare>::deallocate(tree<payload, compare>::node* root) {
     root->data_.~payload();
     delete root;
 }
-}
-#endif  // KER_CONTAINER_DYNAMIC_ARRAY_H
+}  // namespace container
+}  // namespace ker
+#endif  // KER_CONTAINER_TREE_H

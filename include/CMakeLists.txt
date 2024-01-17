@@ -1,6 +1,7 @@
 add_library(ker_lib STATIC
 
 ker/container/dynamic_array.h
+ker/container/tree.h
 
 )
 
