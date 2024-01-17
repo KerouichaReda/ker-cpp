@@ -30,10 +30,11 @@
 #ifndef KER_CONTAINER_DYNAMIC_ARRAY_H
 #define KER_CONTAINER_DYNAMIC_ARRAY_H
 
-#include <memory>
 #include <iterator>
+#include <memory>
 
 namespace ker {
+namespace container {
 const std::size_t max_size_{0xFFFFFFF};
 template <class T>
 class dynamic_array {
@@ -98,8 +99,8 @@ class dynamic_array {
     iterator insert(const_iterator, std::initializer_list<T>);
     template <class... Args>
     reference emplace(const_iterator, Args&&...);
-    iterator erase(iterator);    
-    iterator erase(iterator, iterator);  
+    iterator erase(iterator);
+    iterator erase(iterator, iterator);
     void push_back(const T&);
     void push_back(T&&);
     void pop_back();
@@ -489,7 +490,7 @@ typename dynamic_array<T>::iterator dynamic_array<T>::erase(dynamic_array<T>::it
     return last_;
 }
 
-
-}  // end ker namespace
+}  // namespace container
+}  // namespace ker
 
 #endif  // KER_CONTAINER_DYNAMIC_ARRAY_H

@@ -32,6 +32,7 @@
 #ifndef KER_MEMORY_UNIQUE_PTR_H
 #define KER_MEMORY_UNIQUE_PTR_H
 namespace ker {
+namespace memory {
 template <class T>
 class unique_ptr {
    public:
@@ -93,7 +94,7 @@ class unique_ptr<T[]> {
     }
     T* ptr_ = nullptr;
 };
-
+}
 }  ///< end namespace ker
 
 #endif  // KER_MEMORY_UNIQUE_PTR_H

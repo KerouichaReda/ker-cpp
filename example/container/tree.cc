@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../../ker/container/tree.h"
+#include <ker/container/tree.h>
 
 int main(int argc, char const *argv[])
 {

@@ -32,6 +32,7 @@
 #ifndef KER_MEMORY_SHARED_PTR_H
 #define KER_MEMORY_SHARED_PTR_H
 namespace ker {
+    namespace memory {
 template <class T>
 class shared_ptr {
    public:
@@ -102,6 +103,7 @@ class shared_ptr {
 template <class T, class... A>
 shared_ptr<T> make_shared(A&&... arg) {
     return shared_ptr<T>(new T(std::forward<A>(arg...)); // this defintion is not the correct one and need to be improved
+}
 }
 }  // end namespace ker
 

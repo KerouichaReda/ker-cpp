@@ -1,4 +1,4 @@
-#include "../../ker/concurrency/concurrent_queue.h"
+#include <ker/concurrency/concurrent_queue.h>
 
 #include <iostream>
 #include <string>

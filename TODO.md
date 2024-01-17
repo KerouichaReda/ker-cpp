@@ -1,5 +1,5 @@
 # TODO:
-[] - implement a dynamic array
+
 [] - design intevals container
 [] - finis unique pointer implementation
 [] - set, map (check RB tree implementation)
@@ -10,3 +10,4 @@
 
 # Done:
 [x] - shared pointer
+[x] - implement a dynamic array
