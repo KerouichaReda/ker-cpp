@@ -1,12 +1,12 @@
 # TODO:
 
 [] - design intevals container
-[] - finis unique pointer implementation
+[] - finish unique pointer implementation
 [] - set, map (check RB tree implementation)
 [] - unordered set , unordered map
-[] - std::string hash function
 [] - string tokenizer boost style
 [] - testing
+[] - concurency
 
 # Done:
 [x] - shared pointer
