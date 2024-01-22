@@ -27,12 +27,13 @@
 /// SOFTWARE.
 ///
 
-#ifndef KER_CONCURRENT_QUEUE_H
-#define KER_CONCURRENT_QUEUE_H
+#ifndef KER_CONCURRENCY_CONCURRENT_QUEUE_H
+#define KER_CONCURRENCY_CONCURRENT_QUEUE_H
 #include <queue>
 #include <mutex>
 
 namespace ker {
+namespace concurrency {
 template <class T>
 class concurrent_queue {
    public:
@@ -72,6 +73,7 @@ template <class T>
 bool concurrent_queue<T>::empty() {
     std::lock_guard<std::mutex> lock(mutex_);
     return queue_.empty();
+}
 }
 }
 
