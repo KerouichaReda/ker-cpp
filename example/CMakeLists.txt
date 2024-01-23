@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.14.0 )
 project(example LANGUAGES CXX)
 
 SET(PROJECT_SOURCE_FILES
-container/dynamic_array.cc
+container/tree.cc
 )
 
 

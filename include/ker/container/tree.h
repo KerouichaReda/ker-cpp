@@ -28,6 +28,7 @@
 ///
 
 #include <functional>
+#include <iostream>
 #include <iterator>
 #include <memory>
 
@@ -36,63 +37,87 @@
 namespace ker {
 namespace container {
 
+enum class color : bool { red = false, black = true };
+template <class data>
 struct tree_node {
-    enum class color : bool { red = false, black = true };
-    tree_node* parent_ = nullptr;
-    tree_node* left_ = nullptr;
-    tree_node* right_ = nullptr;
+    tree_node* parent_;
+    tree_node* left_;
+    tree_node* right_;
     color color_ = color::red;
-    std::int64_t data_{};
-    tree_node() {}
-    tree_node(const std::int64_t& val, tree_node* parent) : parent_(parent), data_(val) {}
-    tree_node(const std::int64_t& val, tree_node* parent, tree_node* left, tree_node* right)
+    data data_{};
+    tree_node(tree_node* NIL) : parent_(NIL), left_(NIL), right_(NIL) {}
+    tree_node(const data& val, tree_node* parent, tree_node* NIL)
+        : parent_(parent), left_(NIL), right_(NIL), data_(val) {}
+    tree_node(const data& val, tree_node* parent, tree_node* left, tree_node* right)
         : data_(val), parent_(parent), left_(left), right_(right) {}
     tree_node(tree_node* parent, tree_node* left, tree_node* right) : parent_(parent), left_(left), right_(right) {}
 };
-
+template <class data>
 class tree {
    public:
     tree();
-    void insert(const std::int64_t& val);
+    void insert(const data& val);
+    void print();
+    data min() { return header_.left_->data_; }
+    data max() { return header_.right_->data_; }
 
    private:
-    tree_node* allocate(const std::int64_t&, tree_node* parrent);
-    void deallocate(tree_node*);
-    tree_node* update_header(tree_node* root);
-    tree_node* insert_impl(tree_node*, const std::int64_t&);
+    tree_node<data>* allocate(const data&, tree_node<data>* parrent);
+    void deallocate(tree_node<data>*);
+    tree_node<data>* insert_impl(tree_node<data>*, tree_node<data>*, const data&);
+    void print_impl(tree_node<data>* root);
+    tree_node<data>* update_header(tree_node<data>*);
 
    private:
-    tree_node header_;
-    std::size_t size_{0};
-    std::function<bool(std::int64_t, std::int64_t)> compare_ = [](std::int64_t a, std::int64_t b) { return a < b; };
+    tree_node<data> header_;
+    tree_node<data>* NIL = &header_;
+    std::function<bool(data, data)> compare_ = [](data a, data b) { return a < b; };
 };
-
-tree::tree() {
-    header_.left_ = &header_;
-    header_.right_ = &header_;
-};
-
-tree_node* tree::update_header(tree_node* root) { return root; }
-
-tree_node* tree::insert_impl(tree_node* root, const std::int64_t& val) {
-    if (root == nullptr) return update_header(allocate(val, root));
+template <class data>
+tree<data>::tree() : header_(&header_){};
+template <class data>
+void tree<data>::insert(const data& val) {
+    header_.parent_ = insert_impl(header_.parent_, &header_, val);
+}
+template <class data>
+typename tree_node<data>* tree<data>::insert_impl(tree_node<data>* root, tree_node<data>* parent, const data& val) {
+    if (root == NIL) return update_header(allocate(val, parent));
     if (compare_(val, root->data_)) {
-        root->left_ = insert_impl(root->left_, val);
+        root->left_ = insert_impl(root->left_, root, val);
     } else if (compare_(root->data_, val)) {
-        root->right_ = insert_impl(root->right_, val);
+        root->right_ = insert_impl(root->right_, root, val);
     }
     return root;
 }
-
-void tree::insert(const std::int64_t& val) { header_.parent_ = insert_impl(header_.parent_, val); }
-
-tree_node* tree::allocate(const std::int64_t& data,tree_node* parent) {
-    return new tree_node(data,parent);
+template <class data>
+typename tree_node<data>* tree<data>::allocate(const data& data_, tree_node<data>* parent) {
+    return new tree_node(data_, parent, NIL);
+}
+template <class data>
+void tree<data>::deallocate(tree_node<data>* root) {
+    delete root;
+}
+template <class data>
+void tree<data>::print() {
+    print_impl(header_.parent_);
 }
 
-void tree::deallocate(tree_node* root) {
-    //root->data_;
-    delete root;
+template <class data>
+tree_node<data>* tree<data>::update_header(tree_node<data>* new_node) {
+    if (header_.left_ == NIL || compare_(new_node->data_, header_.left_->data_)) {
+        header_.left_ = new_node;
+    }
+    if (header_.right_ == NIL || compare_(header_.right_->data_, new_node->data_)) {
+        header_.right_ = new_node;
+    }
+    return new_node;
+}
+template <class data>
+void tree<data>::print_impl(tree_node<data>* root) {
+    if (root == NIL) return;
+    print_impl(root->left_);
+    std::cout << root->data_ << " ";
+    print_impl(root->right_);
 }
 }  // namespace container
 }  // namespace ker
