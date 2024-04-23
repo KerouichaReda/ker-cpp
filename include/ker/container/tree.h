@@ -58,8 +58,7 @@ class tree {
     tree();
     void insert(const data& val);
     void print();
-    data min() { return header_.left_->data_; }
-    data max() { return header_.right_->data_; }
+    bool is_balanced();
 
    private:
     tree_node<data>* allocate(const data&, tree_node<data>* parrent);
@@ -68,6 +67,10 @@ class tree {
     void print_impl(tree_node<data>* root);
     tree_node<data>* update_header(tree_node<data>*);
 
+    std::int64_t get_height(tree_node<data>*);
+    bool is_balanced_impl(tree_node<data>*);
+    void balance(tree_node<data>*&);
+    tree_node<data>* rotate_left(tree_node<data>* )
    private:
     tree_node<data> header_;
     tree_node<data>* NIL = &header_;
@@ -87,7 +90,14 @@ typename tree_node<data>* tree<data>::insert_impl(tree_node<data>* root, tree_no
     } else if (compare_(root->data_, val)) {
         root->right_ = insert_impl(root->right_, root, val);
     }
+    balance(root);
     return root;
+}
+
+template <class data>
+void tree<data>::balance(tree_node<data>* &root){
+
+
 }
 template <class data>
 typename tree_node<data>* tree<data>::allocate(const data& data_, tree_node<data>* parent) {
@@ -119,6 +129,23 @@ void tree<data>::print_impl(tree_node<data>* root) {
     std::cout << root->data_ << " ";
     print_impl(root->right_);
 }
+template <class data>
+bool tree<data>::is_balanced_impl(tree_node<data>* root) {
+    return root == NIL ? true
+                       : is_balanced_impl(root->left_) && is_balanced_impl(root->right_) &&
+                             std::abs(get_height(root->left_) - get_height(root->right_)) <= 1;
+}
+template <class data>
+bool tree<data>::is_balanced() {
+    return is_balanced_impl(header_.parent_);
+}
+template <class data>
+std::int64_t tree<data>::get_height(tree_node<data>* root) {
+    return root == NIL ? 0 : 1 + std::max(get_height(root->left_), get_height(root->right_));
+}
+
+
+
 }  // namespace container
 }  // namespace ker
 #endif  // KER_CONTAINER_TREE_H

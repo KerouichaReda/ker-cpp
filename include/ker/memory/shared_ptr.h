@@ -32,7 +32,7 @@
 #ifndef KER_MEMORY_SHARED_PTR_H
 #define KER_MEMORY_SHARED_PTR_H
 namespace ker {
-    namespace memory {
+namespace memory {
 template <class T>
 class shared_ptr {
    public:
@@ -97,7 +97,7 @@ class shared_ptr {
         }
     }
     T* ptr_{nullptr};
-    uint32_t* ref_count_{nullptr};
+    std::atomic<std::size_t>* ref_count_{nullptr};
 };
 
 template <class T, class... A>

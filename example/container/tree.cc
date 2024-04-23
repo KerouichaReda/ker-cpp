@@ -4,14 +4,13 @@
 
 int main(int argc, char const* argv[]) {
     ker::container::tree<std::int64_t> tree_;
-    tree_.insert(1);
-    std::cout << "MIN : " << tree_.min() << " MAX : " << tree_.max() << std::endl; 
     tree_.insert(2);
-    std::cout << "MIN : " << tree_.min() << " MAX : " << tree_.max() << std::endl; 
-    tree_.insert(3);
-    std::cout << "MIN : " << tree_.min() << " MAX : " << tree_.max() << std::endl; 
-    tree_.insert(-1);
-    std::cout << "MIN : " << tree_.min() << " MAX : " << tree_.max() << std::endl; 
+    tree_.insert(1);    
+    tree_.insert(3); 
+    tree_.insert(6);
+    tree_.insert(8);
+
     tree_.print();
+    std::cout << (tree_.is_balanced() ? "Balanced" : "Not Balanced") << std::endl;
     return 0;
 }

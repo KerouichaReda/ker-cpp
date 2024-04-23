@@ -1,8 +1,9 @@
 # TODO:
 
 [] - design intevals container
-[] - finish unique pointer implementation
+
 [] - set, map (check RB tree implementation)
+    [] - self - balancing
 [] - unordered set , unordered map
 [] - string tokenizer boost style
 [] - testing
@@ -11,3 +12,4 @@
 # Done:
 [x] - shared pointer
 [x] - implement a dynamic array
+[x] - unique pointer implementation
