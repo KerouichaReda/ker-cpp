@@ -27,23 +27,20 @@
 /// SOFTWARE.
 ///
 
-namespace ker
-{
-    class continous_interval
-    {
-    private:
-        /* data */
-    public:
-        continous_interval(/* args */);
-        ~continous_interval();
-    };
-    
-    continous_interval::continous_interval(/* args */)
-    {
-    }
-    
-    continous_interval::~continous_interval()
-    {
-    }
-    
-} // namespace ker
+namespace ker {
+
+namespace container {
+class continous_interval {
+   private:
+    /* data */
+   public:
+    continous_interval(/* args */);
+    ~continous_interval();
+};
+
+continous_interval::continous_interval(/* args */) {}
+
+continous_interval::~continous_interval() {}
+}
+
+}  // namespace ker

@@ -1,9 +1,10 @@
-/// @file circular_queue.h
+/// @btree.hpp
 /// @author Reda KEROUCIHA <kerouicha_reda@outlook.com>
 /// @section LICENSE
+/// @brief  this file contain the definition of the database buffer
 /// MIT License
 ///
-/// Copyright (c) 2024 Reda Kerouicha <kerouicha_reda@outlook.com>
+/// Copyright (c) 2024-present Reda Kerouicha <kerouicha_reda@outlook.com>
 ///
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to
@@ -26,42 +27,16 @@
 /// THE
 /// SOFTWARE.
 ///
-
-#ifndef KER_CONTAINER_CIRCULAR_QUEUE_H
-#define KER_CONTAINER_CIRCULAR_QUEUE_H
-#include <memory>
-#include <functional>
-#include <vector>
+#ifndef KER_CONTAINER_BTREE_HPP
+#define KER_CONTAINER_BTREE_HPP
 namespace ker {
-namespace concurency {
-template <class T, class A = std::allocator<T>>
-class circular_queue {
+class btree {
    public:
-    circular_queue(const size_t _buffer_size) : buffer_size_(_buffer_size) { buffer_ = new T[buffer_size_]; }
-    ~circular_queue() {}
-    void push(T _item) {
-        size_ = std::max(++size_, buffer_size_);
-        buffer_[end_index++] = _item;
-        end_index_ %= buffer_size_;
-    }
-    void pop() { start_index_ = (start_index_ + 1) % buffer_size_; }
-    T front() { return buffer_[start_index_]; }
-    std::vector<T> last_formatted() {
-        std::vector<T> last_;
-        for (std::size_t start = start_index_, end = end_index_ + size_; start < end; ++start) {
-            last_.push_back(buffer_[start % buffer_size_]);
-        }
-        return last_;
-    }
+    btree();
 
    private:
-    T* buffer_{nullptr};
-    std::size_t buffer_size_{0};
-    std::size_t start_index_{0};
-    std::size_t end_index_{0};
-    std::size_t size_{};
 };
-}
-}
 
-#endif  // KER_CONTAINER_CIRCULAR_QUEUE_H
+btree::btree() {}
+}  // namespace ker
+#endif  //! KER_CONTAINER_BTREE_HPP
