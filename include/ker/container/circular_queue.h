@@ -33,6 +33,7 @@
 #include <functional>
 #include <vector>
 namespace ker {
+namespace concurency {
 template <class T, class A = std::allocator<T>>
 class circular_queue {
    public:
@@ -59,6 +60,7 @@ class circular_queue {
     std::size_t start_index_{0};
     std::size_t end_index_{0};
     std::size_t size_{};
+};
 }
 }
 

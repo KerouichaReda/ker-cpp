@@ -26,6 +26,7 @@
 /// THE
 /// SOFTWARE.
 ///
+/// https://www.geeksforgeeks.org/introduction-to-red-black-tree/
 
 #include <functional>
 #include <iostream>
@@ -59,18 +60,18 @@ class tree {
     void insert(const data& val);
     void print();
     bool is_balanced();
-    void balance_helper();
 
    private:
     tree_node<data>* allocate(const data&, tree_node<data>* parrent);
     void deallocate(tree_node<data>*);
-    tree_node<data>* insert_impl(tree_node<data>*, tree_node<data>*, const data&);
-    void print_impl(tree_node<data>* root);
+    tree_node<data>* insert_impl(tree_node<data>*, tree_node<data>*, tree_node<data>*&);
+    void in_order(tree_node<data>* root);
+    void pre_order(tree_node<data>* root);
     tree_node<data>* update_header(tree_node<data>*);
 
     std::int64_t get_height(tree_node<data>*);
     bool is_balanced_impl(tree_node<data>*);
-    void balance(tree_node<data>*&);
+    tree_node<data>* insert_fixup(tree_node<data>*);
     tree_node<data>* rotate_left(tree_node<data>*&);
     tree_node<data>* rotate_right(tree_node<data>*&);
     color get_color(tree_node<data>*);
@@ -81,29 +82,77 @@ class tree {
     std::function<bool(data, data)> compare_ = [](data a, data b) { return a < b; };
 };
 template <class data>
-tree<data>::tree() : header_(&header_){};
+tree<data>::tree()
+    : header_(&header_) {
+    header_.data_ = data{};
+};
 template <class data>
 void tree<data>::insert(const data& val) {
-    header_.parent_ = insert_impl(header_.parent_, &header_, val);
+    tree_node<data>* node = allocate(val, NIL);
+    header_.parent_ = insert_impl(header_.parent_, NIL, node);
+    header_.parent_ = insert_fixup(node);
 }
 template <class data>
-typename tree_node<data>* tree<data>::insert_impl(tree_node<data>* root, tree_node<data>* parent, const data& val) {
+typename tree_node<data>* tree<data>::insert_impl(tree_node<data>* root, tree_node<data>* parent,
+                                                  tree_node<data>*& node) {
     if (root == NIL) {
-        root = update_header(allocate(val, parent));
+        root = node;
+        root->parent_ = parent;
+    } else if (compare_(node->data_, root->data_)) {
+        root->left_ = insert_impl(root->left_, root, node);
+    } else if (compare_(root->data_, node->data_)) {
+        root->right_ = insert_impl(root->right_, root, node);
+    } else {
+        deallocate(node);
+        node = NIL;
     }
-    if (compare_(val, root->data_)) {
-        root->left_ = insert_impl(root->left_, root, val);
-    } else if (compare_(root->data_, val)) {
-        root->right_ = insert_impl(root->right_, root, val);
-    }
-    balance(root);
     return root;
 }
 
 template <class data>
-void tree<data>::balance(tree_node<data>*& root) {
-    if(
+typename tree_node<data>* tree<data>::insert_fixup(tree_node<data>* node) {
+    tree_node<data>* root = header_.parent_;
+    while (node != NIL && get_color(node->parent_) == color::red) {
+        tree_node<data>* parent = node->parent_;
+        tree_node<data>* grandpa = node->parent_->parent_;
+        bool is_parent_left_child = grandpa->left_ == parent;
+        tree_node<data>* uncle = is_parent_left_child ? grandpa->right_ : grandpa->left_;
+        if (is_parent_left_child) {
+            if (get_color(uncle) == color::red) {
+                parent->color_ = color::black;
+                uncle->color_ = color::black;
+                grandpa->color_ = color::red;
+                node = grandpa;
+            } else {
+                if (node == parent->right_) {
+                    node = rotate_left(parent);
+                }
+                parent = rotate_right(grandpa);
+                parent->color_ = color::black;
+                grandpa->color_ = color::red;
+                root = parent;
+            }
+        } else {
+            if (get_color(uncle) == color::red) {
+                parent->color_ = color::black;
+                uncle->color_ = color::black;
+                grandpa->color_ = color::red;
+                root = grandpa;
+            } else {
+                if (root == parent->left_) {
+                    node = rotate_right(parent);
+                }
+                parent = rotate_left(grandpa);
+                parent->color_ = color::black;
+                grandpa->color_ = color::red;
+                root = parent;
+            }
+        }
+    }
+    header_.parent_->color_ = color::black;
+    return root;
 }
+
 template <class data>
 typename tree_node<data>* tree<data>::allocate(const data& data_, tree_node<data>* parent) {
     return new tree_node(data_, parent, NIL);
@@ -114,7 +163,9 @@ void tree<data>::deallocate(tree_node<data>* root) {
 }
 template <class data>
 void tree<data>::print() {
-    print_impl(header_.parent_);
+    pre_order(header_.parent_);
+    std::cout << '\n';
+    in_order(header_.parent_);
     std::cout << '\n';
 }
 
@@ -129,17 +180,24 @@ tree_node<data>* tree<data>::update_header(tree_node<data>* new_node) {
     return new_node;
 }
 template <class data>
-void tree<data>::print_impl(tree_node<data>* root) {
+void tree<data>::in_order(tree_node<data>* root) {
     if (root == NIL) return;
-    print_impl(root->left_);
+    in_order(root->left_);
     std::cout << root->data_ << " ";
-    print_impl(root->right_);
+    in_order(root->right_);
 }
 template <class data>
+void tree<data>::pre_order(tree_node<data>* root) {
+    if (root == NIL) return;
+    std::cout << root->data_ << " ";
+    pre_order(root->left_);
+    pre_order(root->right_);
+}
+
+template <class data>
 bool tree<data>::is_balanced_impl(tree_node<data>* root) {
-    return root == NIL ? true
-                       : is_balanced_impl(root->left_) && is_balanced_impl(root->right_) &&
-                             std::abs(get_height(root->left_) - get_height(root->right_)) <= 1;
+    return root == NIL ? true : is_balanced_impl(root->left_) && is_balanced_impl(root->right_) &&
+                                    std::abs(get_height(root->left_) - get_height(root->right_)) <= 1;
 }
 template <class data>
 bool tree<data>::is_balanced() {
@@ -153,10 +211,15 @@ std::int64_t tree<data>::get_height(tree_node<data>* root) {
 template <class data>
 tree_node<data>* tree<data>::rotate_left(tree_node<data>*& root) {
     tree_node<data>* parent = root->parent_;
-    tree_node<data>* temp = root->right_->left_;
     tree_node<data>* right = root->right_;
+    tree_node<data>* temp = right->left_;
     right->left_ = root;
     right->parent_ = parent;
+    if (parent != NIL && parent->left_ == root) {
+        parent->left_ = right;
+    } else if (parent != NIL && parent->right_ == root) {
+        parent->right_ = right;
+    }
     root->right_ = temp;
     root->parent_ = right;
     return right;
@@ -164,19 +227,20 @@ tree_node<data>* tree<data>::rotate_left(tree_node<data>*& root) {
 template <class data>
 tree_node<data>* tree<data>::rotate_right(tree_node<data>*& root) {
     tree_node<data>* parent = root->parent_;
-    tree_node<data>* temp = root->left_->right_;
     tree_node<data>* left = root->left_;
+    tree_node<data>* temp = left->right_;
     left->right_ = root;
     left->parent_ = parent;
+    if (parent != NIL && parent->left_ == root) {
+        parent->left_ = left;
+    } else if (parent != NIL && parent->right_ == root) {
+        parent->right_ = left;
+    }
     root->left_ = temp;
     root->parent_ = left;
     return left;
 }
 
-template <class data>
-void tree<data>::balance_helper() {
-    balance(header_.parent_);
-}
 template <class data>
 color tree<data>::get_color(tree_node<data>* root) {
     return root == NIL || root->color_ == color::black ? color::black : color::red;

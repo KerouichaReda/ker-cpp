@@ -2,6 +2,7 @@
 #include <tree.h>
 #include <functional>
 namespace ker {
+namespace container {
 template <class Key, class Compare = std::less<Key>>
 class set {
    public:
@@ -17,5 +18,5 @@ template <class Key, class Compare>
 set<Key, Compare>::set() {}
 template <class Key, class Compare>
 set<Key, Compare>::~set() {}
-
+}
 }  // namespace ker
